@@ -58,7 +58,7 @@ public class SearchResultsActivity extends Activity {
                             LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
                             rv.setLayoutManager(llm);
                             rv.setHasFixedSize(true);
-                            imageRecords        = new ArrayList<>();
+                            imageRecords = new ArrayList<>();
                             imageRecords = parse(jsonObject);
                             mAdapter = new ImageItemAdapter(getApplicationContext(),imageRecords);
                             rv.setAdapter(mAdapter);

@@ -104,7 +104,7 @@ public class InTheatersFragment extends Fragment {
 
                             imageRecords = parse(jsonObject);
                             mAdapter = new ImageItemAdapter(getActivity(),imageRecords);
-                            imageRecords        = new ArrayList<>();
+                            imageRecords = new ArrayList<>();
                             rv.setAdapter(mAdapter);
 
                         }
