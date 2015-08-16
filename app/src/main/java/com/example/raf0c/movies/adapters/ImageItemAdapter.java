@@ -1,6 +1,7 @@
 package com.example.raf0c.movies.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,41 +20,59 @@ import java.util.List;
 /**
  * Created by raf0c on 16/08/15.
  */
-public class ImageItemAdapter extends ArrayAdapter<ImageItem> {
+public class ImageItemAdapter extends RecyclerView.Adapter<ImageItemAdapter.ImagesViewHolder> {
+
     private ImageLoader mImageLoader;
+    private List<ImageItem> rowItem;
 
-    public ImageItemAdapter(Context context) {
-        super(context, R.layout.image_list_item);
-
+    public ImageItemAdapter(Context context, List<ImageItem> rowItem) {
+        this.rowItem = rowItem;
         mImageLoader = new ImageLoader(ApplicationController.getInstance().getRequestQueue(), new BitmapLruCache());
     }
 
-    // CHANGE THIS TO VIEWHOLDER AND USE RECYCLER
+
+    public static class ImagesViewHolder extends RecyclerView.ViewHolder {
+
+        TextView title;
+        NetworkImageView movie_pic;
+
+        ImagesViewHolder(View itemView) {
+            super(itemView);
+            title = (TextView)itemView.findViewById(R.id.text1);
+            movie_pic = (NetworkImageView)itemView.findViewById(R.id.image1);
+        }
+    }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.image_list_item, parent, false);
-        }
-
-        NetworkImageView imageView = (NetworkImageView) convertView.findViewById(R.id.image1);
-        TextView textView = (TextView) convertView.findViewById(R.id.text1);
-
-        ImageItem imageRecord = getItem(position);
-
-        imageView.setImageUrl(imageRecord.getUrl(), mImageLoader);
-        textView.setText(imageRecord.getTitle());
-
-        return convertView;
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public void swapImageRecords(List<ImageItem> objects) {
-        clear();
-
-        for(ImageItem object : objects) {
-            add(object);
-        }
-
-        notifyDataSetChanged();
+    @Override
+    public ImagesViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.image_list_item, viewGroup, false);
+        ImagesViewHolder pvh = new ImagesViewHolder(v);
+        return pvh;
     }
+
+    @Override
+    public void onBindViewHolder(ImagesViewHolder imagesViewHolder, int i) {
+        imagesViewHolder.title.setText(rowItem.get(i).getTitle());
+        imagesViewHolder.movie_pic.setImageUrl(rowItem.get(i).getUrl(),mImageLoader);
+    }
+
+    @Override
+    public int getItemCount() {
+        return rowItem.size();
+    }
+
+//    public void swapImageRecords(List<ImageItem> objects) {
+//        clear();
+//
+//        for(ImageItem object : objects) {
+//            add(object);
+//        }
+//
+//        notifyDataSetChanged();
+//    }
 }

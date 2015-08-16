@@ -9,9 +9,10 @@
 
     <include android:id="@+id/tool_bar" layout="@layout/tool_bar"/>
 
-    <ListView
-        android:id="@+id/lvSearchResults"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/cardList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        />
 
 </LinearLayout>

@@ -4,11 +4,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -44,6 +47,9 @@ public class InTheatersFragment extends Fragment {
     private String mURL;
     private ImageLoader mImageLoader;
     private ArrayList<ImageItem> records;
+    private RecyclerView rv;
+    private List<ImageItem> imageRecords;
+
 
     public InTheatersFragment(){
 
@@ -59,21 +65,20 @@ public class InTheatersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         myLayout = (LinearLayout) inflater.inflate(R.layout.fragment_intheaters, container, false);
-        mListView = (ListView) myLayout.findViewById(R.id.list1);
-        mAdapter = new ImageItemAdapter(getActivity());
-        mListView.setAdapter(mAdapter);
+
         mURL = Constants.API_INTHEATERS +"?apikey=" + Constants.API_KEY;
         mImageLoader = new ImageLoader(ApplicationController.getInstance().getRequestQueue(), new BitmapLruCache());
 
         fetch(mURL);
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.e("synopsis  del: ", position + " la sinopsis es : " + records.get(position).getSynopsis());
-                displayInfoDialogView(records.get(position).getUrl(),records.get(position).getSynopsis());
-            }
-        });
+//
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Log.e("synopsis  del: ", position + " la sinopsis es : " + records.get(position).getSynopsis());
+//                displayInfoDialogView(records.get(position).getUrl(),records.get(position).getSynopsis());
+//            }
+//        });
 
         return myLayout;
     }
@@ -91,8 +96,17 @@ public class InTheatersFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         try {
-                            List<ImageItem> imageRecords = parse(jsonObject);
-                            mAdapter.swapImageRecords(imageRecords);
+                            rv=(RecyclerView) myLayout.findViewById(R.id.cardList);
+
+                            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+                            rv.setLayoutManager(llm);
+                            rv.setHasFixedSize(true);
+
+                            imageRecords = parse(jsonObject);
+                            mAdapter = new ImageItemAdapter(getActivity(),imageRecords);
+                            imageRecords        = new ArrayList<>();
+                            rv.setAdapter(mAdapter);
+
                         }
                         catch(JSONException e) {
                             Toast.makeText(getActivity(), "Unable to parse data: " + e.getMessage(), Toast.LENGTH_SHORT).show();

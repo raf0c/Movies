@@ -5,6 +5,8 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,7 +29,8 @@ import java.util.List;
  */
 public class SearchResultsActivity extends Activity {
 
-    private ListView mListView;
+    private RecyclerView rv;
+    private List<ImageItem> imageRecords;
     private ImageItemAdapter mAdapter;
     private String mURL;
     private ArrayList<ImageItem> records;
@@ -37,9 +40,8 @@ public class SearchResultsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        mListView = (ListView) findViewById(R.id.lvSearchResults);
-        mAdapter = new ImageItemAdapter(this);
-        mListView.setAdapter(mAdapter);
+
+
         mURL = Constants.API_URL + Constants.API_MOVIES + "?apikey=" + Constants.API_KEY + "&q=";
 
         handleIntent(getIntent());
@@ -52,8 +54,15 @@ public class SearchResultsActivity extends Activity {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         try {
-                            List<ImageItem> imageRecords = parse(jsonObject);
-                            mAdapter.swapImageRecords(imageRecords);
+                            rv=(RecyclerView)findViewById(R.id.cardList);
+                            LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
+                            rv.setLayoutManager(llm);
+                            rv.setHasFixedSize(true);
+                            imageRecords        = new ArrayList<>();
+                            imageRecords = parse(jsonObject);
+                            mAdapter = new ImageItemAdapter(getApplicationContext(),imageRecords);
+                            rv.setAdapter(mAdapter);
+
                         }
                         catch(JSONException e) {
                             Toast.makeText(getApplicationContext(), "Unable to parse data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
