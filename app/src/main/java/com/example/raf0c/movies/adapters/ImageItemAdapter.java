@@ -1,6 +1,8 @@
 package com.example.raf0c.movies.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import com.example.raf0c.movies.R;
 import com.example.raf0c.movies.bean.ImageItem;
 import com.example.raf0c.movies.controller.ApplicationController;
 import com.example.raf0c.movies.utils.BitmapLruCache;
+import com.example.raf0c.movies.utils.Dialogs;
 
 import java.util.List;
 
@@ -22,11 +25,13 @@ import java.util.List;
  */
 public class ImageItemAdapter extends RecyclerView.Adapter<ImageItemAdapter.ImagesViewHolder> {
 
-    private ImageLoader mImageLoader;
-    private List<ImageItem> rowItem;
+    private static ImageLoader mImageLoader;
+    private static List<ImageItem> rowItem;
+    private static Activity activity;
 
-    public ImageItemAdapter(Context context, List<ImageItem> rowItem) {
+    public ImageItemAdapter(Context context, List<ImageItem> rowItem, Activity activity) {
         this.rowItem = rowItem;
+        this.activity = activity;
         mImageLoader = new ImageLoader(ApplicationController.getInstance().getRequestQueue(), new BitmapLruCache());
     }
 
@@ -35,11 +40,20 @@ public class ImageItemAdapter extends RecyclerView.Adapter<ImageItemAdapter.Imag
 
         TextView title;
         NetworkImageView movie_pic;
+        CardView cardview;
 
         ImagesViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.text1);
             movie_pic = (NetworkImageView)itemView.findViewById(R.id.image1);
+            cardview = (CardView) itemView.findViewById(R.id.card_view);
+
+            cardview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialogs.displayInfoDialogView(rowItem.get(getPosition()).getUrl(), rowItem.get(getPosition()).getSynopsis(), rowItem.get(getPosition()).getTitle(), activity, mImageLoader);
+                }
+            });
         }
     }
 

@@ -22,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
+import com.example.raf0c.movies.MainActivity;
 import com.example.raf0c.movies.R;
 import com.example.raf0c.movies.adapters.ImageItemAdapter;
 import com.example.raf0c.movies.bean.ImageItem;
@@ -103,7 +104,7 @@ public class InTheatersFragment extends Fragment {
                             rv.setHasFixedSize(true);
 
                             imageRecords = parse(jsonObject);
-                            mAdapter = new ImageItemAdapter(getActivity(),imageRecords);
+                            mAdapter = new ImageItemAdapter(getActivity(),imageRecords, getActivity());
                             imageRecords = new ArrayList<>();
                             rv.setAdapter(mAdapter);
 
@@ -144,19 +145,5 @@ public class InTheatersFragment extends Fragment {
         }
 
         return records;
-    }
-
-    private void displayInfoDialogView(String urlImage, String synop) {
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-        alertDialog.setTitle("Movie Info");
-        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.movie_selected, null);
-        alertDialog.setView(view);
-        NetworkImageView imageView = (NetworkImageView) view.findViewById(R.id.nivSelected);
-        TextView textView = (TextView) view.findViewById(R.id.tvSynopsis);
-        textView.setText("Synopsis : " + synop);
-        imageView.setImageUrl(urlImage, mImageLoader);
-        alertDialog.create().show();
     }
 }

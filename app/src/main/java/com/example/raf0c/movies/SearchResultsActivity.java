@@ -34,16 +34,14 @@ public class SearchResultsActivity extends Activity {
     private ImageItemAdapter mAdapter;
     private String mURL;
     private ArrayList<ImageItem> records;
+    private Activity activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
-
-
+        activity = this;
         mURL = Constants.API_URL + Constants.API_MOVIES + "?apikey=" + Constants.API_KEY + "&q=";
-
         handleIntent(getIntent());
 
     }
@@ -60,7 +58,7 @@ public class SearchResultsActivity extends Activity {
                             rv.setHasFixedSize(true);
                             imageRecords = new ArrayList<>();
                             imageRecords = parse(jsonObject);
-                            mAdapter = new ImageItemAdapter(getApplicationContext(),imageRecords);
+                            mAdapter = new ImageItemAdapter(getApplicationContext(),imageRecords, activity);
                             rv.setAdapter(mAdapter);
 
                         }

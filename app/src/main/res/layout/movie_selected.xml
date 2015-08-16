@@ -6,12 +6,26 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <com.android.volley.toolbox.NetworkImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:scaleType="centerCrop"
-        tools:src="@drawable/movie"
-        android:id="@+id/nivSelected"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/movie"
+            android:id="@+id/nivSelected"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/primary_dark"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:id="@+id/tvTitle"/>
+
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
