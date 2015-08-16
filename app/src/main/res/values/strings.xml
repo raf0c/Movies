@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Movies</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Type movie</string>
+    <string name="openDrawer">Open navigation drawer</string>
+    <string name="closeDrawer">Close navigation drawer</string>
+    <string-array name="drawer_search">
+        <item>In theaters</item>
+    </string-array>
+    <array name="drawer_icons">
+        <item>@drawable/movie</item>
+    </array>
+</resources>
