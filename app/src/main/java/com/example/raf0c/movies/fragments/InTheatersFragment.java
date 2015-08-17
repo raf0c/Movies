@@ -6,12 +6,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,7 +19,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
-import com.example.raf0c.movies.MainActivity;
 import com.example.raf0c.movies.R;
 import com.example.raf0c.movies.adapters.ImageItemAdapter;
 import com.example.raf0c.movies.bean.ImageItem;
@@ -69,17 +65,13 @@ public class InTheatersFragment extends Fragment {
 
         mURL = Constants.API_INTHEATERS +"?apikey=" + Constants.API_KEY;
         mImageLoader = new ImageLoader(ApplicationController.getInstance().getRequestQueue(), new BitmapLruCache());
+        rv=(RecyclerView) myLayout.findViewById(R.id.cardList);
 
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        rv.setLayoutManager(llm);
+        rv.setHasFixedSize(true);
+        imageRecords = new ArrayList<>();
         fetch(mURL);
-
-//
-//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.e("synopsis  del: ", position + " la sinopsis es : " + records.get(position).getSynopsis());
-//                displayInfoDialogView(records.get(position).getUrl(),records.get(position).getSynopsis());
-//            }
-//        });
 
         return myLayout;
     }
@@ -97,16 +89,17 @@ public class InTheatersFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         try {
-                            rv=(RecyclerView) myLayout.findViewById(R.id.cardList);
-
-                            LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-                            rv.setLayoutManager(llm);
-                            rv.setHasFixedSize(true);
 
                             imageRecords = parse(jsonObject);
-                            mAdapter = new ImageItemAdapter(getActivity(),imageRecords, getActivity());
-                            imageRecords = new ArrayList<>();
+                            mAdapter = new ImageItemAdapter(getActivity(),imageRecords);
                             rv.setAdapter(mAdapter);
+                            mAdapter.setOnItemClickListener(new ImageItemAdapter.OnItemClickListener() {
+                                public void onItemClick(String url, String synopsis, String title, ImageLoader mImageLoader) {
+
+                                    displayInfoDialogView(url, synopsis, title, mImageLoader);
+                                }
+                            });
+                            mAdapter.notifyDataSetChanged();
 
                         }
                         catch(JSONException e) {
@@ -145,5 +138,21 @@ public class InTheatersFragment extends Fragment {
         }
 
         return records;
+    }
+
+    public void displayInfoDialogView(String urlImage, String synop, String title, ImageLoader mImageLoader) {
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+        alertDialog.setTitle("Movie Info");
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.movie_selected, null);
+        alertDialog.setView(view);
+        NetworkImageView imageView = (NetworkImageView) view.findViewById(R.id.nivSelected);
+        TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
+        TextView tvSynopsis = (TextView) view.findViewById(R.id.tvSynopsis);
+        tvTitle.setText(title);
+        tvSynopsis.setText("Synopsis : " + synop);
+        imageView.setImageUrl(urlImage, mImageLoader);
+        alertDialog.create().show();
     }
 }

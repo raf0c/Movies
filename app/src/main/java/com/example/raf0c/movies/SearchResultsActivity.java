@@ -2,21 +2,29 @@ package com.example.raf0c.movies;
 
 import android.app.Activity;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ListView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.NetworkImageView;
 import com.example.raf0c.movies.adapters.ImageItemAdapter;
 import com.example.raf0c.movies.bean.ImageItem;
 import com.example.raf0c.movies.constants.Constants;
 import com.example.raf0c.movies.controller.ApplicationController;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +35,7 @@ import java.util.List;
 /**
  * Created by raf0c on 16/08/15.
  */
-public class SearchResultsActivity extends Activity {
+public class SearchResultsActivity extends AppCompatActivity {
 
     private RecyclerView rv;
     private List<ImageItem> imageRecords;
@@ -41,9 +49,32 @@ public class SearchResultsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         activity = this;
+
+        rv=(RecyclerView)findViewById(R.id.cardList);
+        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
+        rv.setLayoutManager(llm);
+        rv.setHasFixedSize(true);
+        imageRecords = new ArrayList<>();
+
         mURL = Constants.API_URL + Constants.API_MOVIES + "?apikey=" + Constants.API_KEY + "&q=";
         handleIntent(getIntent());
 
+    }
+
+    public void displayInfoDialogView(String urlImage, String synop, String title, Activity activity, ImageLoader mImageLoader) {
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+        alertDialog.setTitle("Movie Info");
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.movie_selected, null);
+        alertDialog.setView(view);
+        NetworkImageView imageView = (NetworkImageView) view.findViewById(R.id.nivSelected);
+        TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
+        TextView tvSynopsis = (TextView) view.findViewById(R.id.tvSynopsis);
+        tvTitle.setText(title);
+        tvSynopsis.setText("Synopsis : " + synop);
+        imageView.setImageUrl(urlImage, mImageLoader);
+        alertDialog.create().show();
     }
 
     private void searchMovies(String query) {
@@ -52,14 +83,19 @@ public class SearchResultsActivity extends Activity {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
                         try {
-                            rv=(RecyclerView)findViewById(R.id.cardList);
-                            LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
-                            rv.setLayoutManager(llm);
-                            rv.setHasFixedSize(true);
-                            imageRecords = new ArrayList<>();
+
                             imageRecords = parse(jsonObject);
-                            mAdapter = new ImageItemAdapter(getApplicationContext(),imageRecords, activity);
+                            mAdapter = new ImageItemAdapter(getApplicationContext(),imageRecords);
                             rv.setAdapter(mAdapter);
+
+                            mAdapter.setOnItemClickListener(new ImageItemAdapter.OnItemClickListener() {
+                                public void onItemClick(String url, String synopsis, String title, ImageLoader mImageLoader) {
+
+                                    displayInfoDialogView(url, synopsis, title, activity, mImageLoader);
+
+                                }
+                            });
+                            mAdapter.notifyDataSetChanged();
 
                         }
                         catch(JSONException e) {
