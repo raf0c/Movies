@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     public DrawerLayout mDrawerLayout;
     public ListView mDrawerListView;
     private Context mContext;
-    private InTheatersFragment fragment_theater;
     private Fragment fragment;
     private Activity mActivity;
 
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         mActivity = this;
 
         mContext        = getApplicationContext();
-        fragment = fragment_theater.newInstance(this);
+        fragment = InTheatersFragment.newInstance(this);
 
         rowItems        = new ArrayList<>();
 
